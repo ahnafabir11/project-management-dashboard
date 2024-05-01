@@ -7,7 +7,7 @@ export default function Layout({ children }: PropsWithChildren) {
       <Header className="shrink-0 shadow" />
 
       <div className="grow overflow-y-scroll">
-        <div className="container py-4 sm:py-6 lg:py-8">{children}</div>
+        <div className="h-full container py-4 sm:py-6 lg:py-8">{children}</div>
       </div>
     </div>
   );

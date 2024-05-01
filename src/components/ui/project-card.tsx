@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/utils/cn";
 import {
   DeleteOutlined,
   EditOutlined,
@@ -17,7 +18,12 @@ import {
 } from "antd";
 import Link from "next/link";
 
-export default function ProjectCard() {
+interface ProjectCardProps {
+  id: string;
+  className?: string;
+}
+
+export default function ProjectCard({ id, className }: ProjectCardProps) {
   const handleEditPorject = () => {};
   const handleDeletePorject = () => {};
 
@@ -48,7 +54,10 @@ export default function ProjectCard() {
   ];
 
   return (
-    <Link href="/" className="group relative block">
+    <Link
+      href={`/projects/${id}`}
+      className={cn("group relative block", className)}
+    >
       <span className="absolute inset-0 border-2 border-dashed border-black rounded"></span>
 
       <div className="group-hover:-translate-x-2 group-hover:-translate-y-2 transform transition-transform h-full bg-white border-2 border-black rounded">
@@ -59,7 +68,7 @@ export default function ProjectCard() {
               level={4}
               className="group-hover:underline !mb-0"
             >
-              Project 1
+              Project {id}
             </Typography.Title>
 
             <CardDropdown items={items} />
