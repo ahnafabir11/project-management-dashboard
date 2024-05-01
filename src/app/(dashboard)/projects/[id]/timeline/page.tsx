@@ -4,7 +4,7 @@ import React from "react";
 
 export default function ProjectTimeline() {
   return (
-    <main>
+    <main className="p-4 sm:p-6 lg:p-8">
       <Typography.Title level={3} className="!mb-8">
         Project Timeline
       </Typography.Title>

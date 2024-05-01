@@ -77,7 +77,7 @@ export default function Layout({ children, params }: LayoutProps) {
           />
         </div>
 
-        <div className="grow p-4 sm:p-6 lg:p-8 overflow-auto">{children}</div>
+        <div className="grow overflow-auto">{children}</div>
       </div>
     </div>
   );

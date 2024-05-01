@@ -90,7 +90,7 @@ export default function ProjectMembers() {
   ];
 
   return (
-    <main>
+    <main className="p-4 sm:p-6 lg:p-8">
       <div className="flex flex-col sm:flex-row sm:justify-between items-center mb-8">
         <Typography.Title level={3} className="!m-0">
           Project Members
