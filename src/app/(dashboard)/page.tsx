@@ -1,9 +1,12 @@
-import ProjectCard from "@/components/ui/project-card";
-import Search from "@/components/ui/search";
-import { AppstoreAddOutlined } from "@ant-design/icons";
-import { Button } from "antd";
+import CreateProjectTrigger from "@/components/create-project-trigger";
+import ProjectSearchFilter from "@/components/project-search-filter";
+import ProjectList from "./project-list";
 
-export default function Home() {
+export default function Home({
+  searchParams,
+}: {
+  searchParams: { search: string | undefined };
+}) {
   return (
     <main>
       <section className="bg-gray-50 mb-8">
@@ -19,33 +22,18 @@ export default function Home() {
               </p>
             </div>
 
-            <Button
-              size="large"
-              type="primary"
-              icon={<AppstoreAddOutlined />}
-              className="w-full sm:w-auto mt-4 sm:mt-0"
-            >
-              Create Project
-            </Button>
+            <CreateProjectTrigger />
           </div>
         </div>
       </section>
 
       <section>
         <div className="sm:flex sm:justify-end">
-          <Search
-            allowClear
-            enterButton
-            size="large"
-            className="sm:max-w-xs"
-            placeholder="Search project..."
-          />
+          <ProjectSearchFilter />
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 py-4">
-          {Array.from({ length: 20 }).map((_, idx) => (
-            <ProjectCard key={idx} id={idx.toString()} />
-          ))}
+          <ProjectList searchString={searchParams.search} />
         </div>
       </section>
     </main>
