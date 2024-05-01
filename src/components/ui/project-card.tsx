@@ -1,5 +1,6 @@
 "use client";
 import { ProjectFormValues } from "@/types/project";
+import { UserType } from "@/types/user";
 import { cn } from "@/utils/cn";
 import useProjectStore from "@/utils/store";
 import {
@@ -23,10 +24,16 @@ import ProjectModal from "../project-modal";
 interface ProjectCardProps {
   id: string;
   name: string;
+  users: UserType[];
   className?: string;
 }
 
-export default function ProjectCard({ id, name, className }: ProjectCardProps) {
+export default function ProjectCard({
+  id,
+  name,
+  users,
+  className,
+}: ProjectCardProps) {
   const editProject = useProjectStore((state) => state.editProject);
   const deleteProject = useProjectStore((state) => state.deleteProject);
 
@@ -97,8 +104,8 @@ export default function ProjectCard({ id, name, className }: ProjectCardProps) {
             maxCount={5}
             maxStyle={{ color: "#1677ff", backgroundColor: "#e6f4ff" }}
           >
-            {Array.from({ length: 10 }).map((_, idx) => (
-              <Tooltip key={idx} title="User 1">
+            {users.map(({ id, name }) => (
+              <Tooltip key={id} title={name}>
                 <Avatar
                   icon={<UserOutlined />}
                   style={{ backgroundColor: "#4096ff", color: "#fff" }}

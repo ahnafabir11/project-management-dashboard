@@ -10,7 +10,7 @@ export default function CreateProjectTrigger() {
   const addProject = useProjectStore((state) => state.addProject);
 
   const handleCreateProject = (values: ProjectFormValues) => {
-    const newProject = { id: uuidv4(), ...values };
+    const newProject = { id: uuidv4(), ...values, users: [] };
     addProject(newProject);
   };
 

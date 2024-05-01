@@ -1,9 +1,12 @@
 import create from "zustand";
+import { projects as oldProjects } from "@/data/projects";
+import { users as oldUsers } from "@/data/users";
+import { UserType } from "@/types/user";
 
 interface Project {
   id: string;
   name: string;
-  // Add other properties as needed
+  users: UserType[];
 }
 
 interface ProjectState {
@@ -13,9 +16,25 @@ interface ProjectState {
   editProject: (projectId: string, updatedProject: Partial<Project>) => void;
 }
 
+// Function to merge users array with projects array
+const mergeUsersWithProjects = () => {
+  // Map over each project
+  return oldProjects.map((project) => {
+    // Find the users associated with the current project
+    const projectUsers = project.users.map((userId) =>
+      oldUsers.find((user) => user.id === userId)!
+    );
+    // Return the project object with merged users
+    return { ...project, users: projectUsers };
+  });
+};
+
+// Merged array of projects with associated users
+const projectsWithUsers = mergeUsersWithProjects();
+
 // Initial state
 const initialState: ProjectState = {
-  projects: [],
+  projects: [...projectsWithUsers],
   addProject: () => {},
   deleteProject: () => {},
   editProject: () => {},

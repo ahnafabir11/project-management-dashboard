@@ -20,8 +20,8 @@ export default function ProjectList({ searchString }: ProjectListProps) {
 
   return (
     <>
-      {filteredProjects.map(({ id, name }) => (
-        <ProjectCard key={id} id={id} name={name} />
+      {filteredProjects.map(({ id, name, users }) => (
+        <ProjectCard key={id} id={id} name={name} users={users} />
       ))}
     </>
   );
