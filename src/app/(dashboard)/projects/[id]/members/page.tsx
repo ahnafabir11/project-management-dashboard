@@ -1,24 +1,21 @@
 "use client";
+import useProjectStore from "@/utils/store";
 import { DeleteOutlined, UserAddOutlined } from "@ant-design/icons";
 import type { TableProps } from "antd";
-import {
-  Button,
-  Popconfirm,
-  Space,
-  Table,
-  Tag,
-  Tooltip,
-  Typography,
-} from "antd";
+import { Button, Popconfirm, Space, Table, Tooltip, Typography } from "antd";
 
 interface DataType {
   id: string;
   name: string;
   email: string;
-  type: string;
 }
 
-export default function ProjectMembers() {
+export default function ProjectMembers({ params }: { params: { id: string } }) {
+  const projects = useProjectStore((state) => state.projects);
+  const projectsMembers = projects.find(
+    (project) => project.id === params.id
+  )!.users;
+
   const handleRemoveMember = (memberId: string) => {
     console.log(memberId);
   };
@@ -33,14 +30,6 @@ export default function ProjectMembers() {
       key: "email",
       title: "Email",
       dataIndex: "email",
-    },
-    {
-      key: "type",
-      title: "Type",
-      dataIndex: "type",
-      render: (tag) => (
-        <Tag color={tag === "admin" ? "cyan" : "blue"}>{tag.toUpperCase()}</Tag>
-      ),
     },
     {
       key: "action",
@@ -68,26 +57,11 @@ export default function ProjectMembers() {
     },
   ];
 
-  const data: DataType[] = [
-    {
-      id: "1",
-      name: "John Brown",
-      email: "ahnafabir313@gmail.com",
-      type: "admin",
-    },
-    {
-      id: "2",
-      name: "Jim Green",
-      email: "ahnafabir313@gmail.com",
-      type: "member",
-    },
-    {
-      id: "3",
-      name: "Joe Black",
-      email: "ahnafabir313@gmail.com",
-      type: "member",
-    },
-  ];
+  const data: DataType[] = projectsMembers.map(({ id, name, email }) => ({
+    id,
+    name,
+    email,
+  }));
 
   return (
     <main className="p-4 sm:p-6 lg:p-8">

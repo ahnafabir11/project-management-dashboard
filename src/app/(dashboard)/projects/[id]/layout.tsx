@@ -1,5 +1,5 @@
 "use client";
-import { PropsWithChildren } from "react";
+import { projects } from "@/data/projects";
 import {
   MergeOutlined,
   ProjectOutlined,
@@ -9,6 +9,7 @@ import type { MenuProps } from "antd";
 import { Breadcrumb, Menu } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { PropsWithChildren, useMemo } from "react";
 
 interface LayoutProps extends PropsWithChildren {
   params: { id: string };
@@ -23,8 +24,11 @@ const getSelectedItem = (pathname: string, items: string[]) => {
 };
 
 export default function Layout({ children, params }: LayoutProps) {
-  const pathname = usePathname();
+  const project = useMemo(() => {
+    return projects.find((project) => project.id === params.id)!;
+  }, [params.id]);
 
+  const pathname = usePathname();
   const BASE_URL = `/projects/${params.id}`;
 
   const items: MenuItem[] = [
@@ -55,7 +59,7 @@ export default function Layout({ children, params }: LayoutProps) {
       <Breadcrumb
         items={[
           { title: <Link href="/">Projects</Link> },
-          { title: `Porject ${params.id}` },
+          { title: project.name },
         ]}
       />
 

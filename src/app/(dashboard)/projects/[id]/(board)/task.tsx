@@ -3,6 +3,7 @@ import { DeleteOutlined } from "@ant-design/icons";
 import { useSortable } from "@dnd-kit/sortable";
 import { Button, Typography } from "antd";
 import { CSS } from "@dnd-kit/utilities";
+import { useState } from "react";
 
 interface TaskProps {
   id: string;
@@ -19,6 +20,8 @@ export default function Task({
   className,
   deleteTask,
 }: TaskProps) {
+  const [contentString, setContentString] = useState(content);
+
   const {
     setNodeRef,
     attributes,
@@ -43,7 +46,9 @@ export default function Task({
         className
       )}
     >
-      <Typography.Text>{content}</Typography.Text>
+      <Typography.Text editable={{ onChange: setContentString }}>
+        {contentString}
+      </Typography.Text>
 
       <Button
         danger

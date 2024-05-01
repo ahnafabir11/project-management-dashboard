@@ -14,6 +14,7 @@ import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { Button } from "antd";
 import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { v4 as uuidv4 } from "uuid";
 import Column from "./column";
 import Task from "./task";
 
@@ -37,12 +38,7 @@ export default function Board() {
   const columnIds = useMemo(() => columns.map((col) => col.id), [columns]);
 
   const handleCreateTask = (id: string) => {
-    const newTask = {
-      id: `task-${tasks.length + 1}`,
-      columnId: id,
-      content: `Task ${tasks.length + 1}`,
-    };
-
+    const newTask = { id: uuidv4(), columnId: id, content: "New Task" };
     setTasks((tasks) => [...tasks, newTask]);
   };
 
@@ -52,11 +48,7 @@ export default function Board() {
   };
 
   const createNewColumn = () => {
-    const newColumn = {
-      id: `col-${columns.length + 1}`,
-      title: `New Column ${columns.length + 1}`,
-    };
-
+    const newColumn = { id: uuidv4(), title: "New Column" };
     setColumns((preColumns) => [...preColumns, newColumn]);
   };
 
@@ -68,7 +60,7 @@ export default function Board() {
   };
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 1 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
 
   const onDragStart = (event: DragStartEvent) => {

@@ -3,8 +3,8 @@ import { cn } from "@/utils/cn";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Button, Tag, Typography } from "antd";
-import { useMemo } from "react";
+import { Button, Typography } from "antd";
+import { useMemo, useState } from "react";
 import Task from "./task";
 
 interface Task {
@@ -32,6 +32,8 @@ export default function Column({
   deleteTask,
   deleteColumn,
 }: ColumnProps) {
+  const [columnTilte, setColumnTilte] = useState(title);
+
   const taskIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
 
   const {
@@ -59,12 +61,13 @@ export default function Column({
       )}
     >
       <div className="flex items-center gap-2 bg-gray-50 px-4 py-2">
-        <Tag color="processing" bordered={false} className="shrink-0">
-          10
-        </Tag>
-
-        <Typography.Title ellipsis level={4} className="!m-0 !mr-auto">
-          {title}
+        <Typography.Title
+          ellipsis
+          level={4}
+          className="!m-0 !mr-auto"
+          editable={{ onChange: setColumnTilte }}
+        >
+          {columnTilte}
         </Typography.Title>
 
         <Button

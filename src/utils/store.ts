@@ -21,20 +21,17 @@ const mergeUsersWithProjects = () => {
   // Map over each project
   return oldProjects.map((project) => {
     // Find the users associated with the current project
-    const projectUsers = project.users.map((userId) =>
-      oldUsers.find((user) => user.id === userId)!
+    const projectUsers = project.users.map(
+      (userId) => oldUsers.find((user) => user.id === userId)!
     );
     // Return the project object with merged users
     return { ...project, users: projectUsers };
   });
 };
 
-// Merged array of projects with associated users
-const projectsWithUsers = mergeUsersWithProjects();
-
 // Initial state
 const initialState: ProjectState = {
-  projects: [...projectsWithUsers],
+  projects: [...mergeUsersWithProjects()],
   addProject: () => {},
   deleteProject: () => {},
   editProject: () => {},
