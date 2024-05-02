@@ -1,4 +1,4 @@
-import create from "zustand";
+import { create } from "zustand";
 import { projects as oldProjects } from "@/data/projects";
 import { users as oldUsers } from "@/data/users";
 import { UserType } from "@/types/user";
