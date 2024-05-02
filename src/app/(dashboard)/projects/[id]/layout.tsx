@@ -1,5 +1,5 @@
 "use client";
-import { projects } from "@/data/projects";
+import useProjectStore from "@/context/project-store";
 import {
   MergeOutlined,
   ProjectOutlined,
@@ -24,9 +24,10 @@ const getSelectedItem = (pathname: string, items: string[]) => {
 };
 
 export default function Layout({ children, params }: LayoutProps) {
+  const projects = useProjectStore((state) => state.projects);
   const project = useMemo(() => {
     return projects.find((project) => project.id === params.id)!;
-  }, [params.id]);
+  }, [projects, params.id]);
 
   const pathname = usePathname();
   const BASE_URL = `/projects/${params.id}`;
