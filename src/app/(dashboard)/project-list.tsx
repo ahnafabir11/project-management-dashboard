@@ -1,6 +1,6 @@
 "use client";
 import ProjectCard from "@/components/ui/project-card";
-import useProjectStore from "@/utils/store";
+import useProjectStore from "@/context/project-store";
 import { useMemo } from "react";
 
 interface ProjectListProps {

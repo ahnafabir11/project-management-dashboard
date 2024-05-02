@@ -1,5 +1,5 @@
 "use client";
-import useProjectStore from "@/utils/store";
+import useProjectStore from "@/context/project-store";
 import { DeleteOutlined, UserAddOutlined } from "@ant-design/icons";
 import type { TableProps } from "antd";
 import { Button, Popconfirm, Space, Table, Tooltip, Typography } from "antd";

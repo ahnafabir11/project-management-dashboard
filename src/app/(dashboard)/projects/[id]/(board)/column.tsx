@@ -1,38 +1,28 @@
 "use client";
+import useBoardStore from "@/context/board-store";
 import { cn } from "@/utils/cn";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button, Typography } from "antd";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import Task from "./task";
-
-interface Task {
-  id: string;
-  content: string;
-  columnId: string;
-}
 
 interface ColumnProps {
   id: string;
   title: string;
-  tasks: Task[];
   className?: string;
-  createTask: (id: string) => void;
-  deleteTask: (id: string) => void;
-  deleteColumn: (id: string) => void;
 }
 
-export default function Column({
-  id,
-  title,
-  tasks,
-  className,
-  createTask,
-  deleteTask,
-  deleteColumn,
-}: ColumnProps) {
-  const [columnTilte, setColumnTilte] = useState(title);
+export default function Column({ id, title, className }: ColumnProps) {
+  const allTasks = useBoardStore((state) => state.tasks);
+  const tasks = useMemo(
+    () => allTasks.filter((task) => task.columnId === id),
+    [id, allTasks]
+  );
+  const createTask = useBoardStore((state) => state.createTask);
+  const deleteColumn = useBoardStore((state) => state.deleteColumn);
+  const updateColumn = useBoardStore((state) => state.updateColumn);
 
   const taskIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
 
@@ -64,10 +54,10 @@ export default function Column({
         <Typography.Title
           ellipsis
           level={4}
-          className="!m-0 !mr-auto"
-          editable={{ onChange: setColumnTilte }}
+          className="!m-0 !mr-auto grow"
+          editable={{ onChange: (value) => updateColumn(id, { title: value }) }}
         >
-          {columnTilte}
+          {title}
         </Typography.Title>
 
         <Button
@@ -82,12 +72,7 @@ export default function Column({
       <div className="flex flex-col gap-4 flex-grow p-2 overflow-x-hidden overflow-y-auto">
         <SortableContext items={taskIds}>
           {tasks.map((task) => (
-            <Task
-              {...task}
-              key={task.id}
-              className="shrink-0"
-              deleteTask={deleteTask}
-            />
+            <Task {...task} key={task.id} className="shrink-0" />
           ))}
         </SortableContext>
       </div>

@@ -1,4 +1,5 @@
 "use client";
+import useBoardStore from "@/context/board-store";
 import { PlusOutlined } from "@ant-design/icons";
 import {
   DndContext,
@@ -12,52 +13,29 @@ import {
 } from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { Button } from "antd";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { createPortal } from "react-dom";
-import { v4 as uuidv4 } from "uuid";
 import Column from "./column";
 import Task from "./task";
 
-type Column = {
-  id: string;
-  title: string;
-};
+export default function Board({ projectId }: { projectId: string }) {
+  const activeTask = useBoardStore((state) => state.activeTask);
+  const activeColumn = useBoardStore((state) => state.activeColumn);
+  const updateActiveTask = useBoardStore((state) => state.updateActiveTask);
+  const updateActiveColumn = useBoardStore((state) => state.updateActiveColumn);
 
-type Task = {
-  id: string;
-  content: string;
-  columnId: string;
-};
+  const tasks = useBoardStore((state) => state.tasks);
+  const sortTasks = useBoardStore((state) => state.sortTasks);
 
-export default function Board() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [columns, setColumns] = useState<Column[]>([]);
-  const [activeTask, setActiveTask] = useState<Task | null>(null);
-  const [activeColumn, setActiveColumn] = useState<Column | null>(null);
+  const allCols = useBoardStore((state) => state.columns);
+  const columns = useMemo(
+    () => allCols.filter((col) => col.projectId === projectId),
+    [projectId, allCols]
+  );
+  const createColumn = useBoardStore((state) => state.createColumn);
+  const sortColumns = useBoardStore((state) => state.sortColumns);
 
   const columnIds = useMemo(() => columns.map((col) => col.id), [columns]);
-
-  const handleCreateTask = (id: string) => {
-    const newTask = { id: uuidv4(), columnId: id, content: "New Task" };
-    setTasks((tasks) => [...tasks, newTask]);
-  };
-
-  const handleDeleteTask = (id: string) => {
-    const filteredTasks = tasks.filter((task) => id !== task.id);
-    setTasks(filteredTasks);
-  };
-
-  const createNewColumn = () => {
-    const newColumn = { id: uuidv4(), title: "New Column" };
-    setColumns((preColumns) => [...preColumns, newColumn]);
-  };
-
-  const handleDeleteColumn = (id: string) => {
-    const filteredColumns = columns.filter((col) => id !== col.id);
-    setColumns(filteredColumns);
-    const filteredTasks = tasks.filter((task) => id !== task.columnId);
-    setTasks(filteredTasks);
-  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -68,19 +46,19 @@ export default function Board() {
     const { data } = active;
 
     if (data.current?.type === "COLUMN") {
-      setActiveColumn(data.current?.column);
+      updateActiveColumn(data.current?.column);
       return;
     }
 
     if (data.current?.type === "TASK") {
-      setActiveTask(data.current?.task);
+      updateActiveTask(data.current?.task);
       return;
     }
   };
 
   const onDragEnd = (event: DragEndEvent) => {
-    setActiveTask(null);
-    setActiveColumn(null);
+    updateActiveTask(null);
+    updateActiveColumn(null);
 
     const { active, over } = event;
 
@@ -91,16 +69,12 @@ export default function Board() {
 
     if (overColumnId === activeColumnId) return;
 
-    setColumns((columns) => {
-      const activeColumnIndex = columns.findIndex(
-        (col) => activeColumnId === col.id
-      );
-      const overColumnIndex = columns.findIndex(
-        (col) => overColumnId === col.id
-      );
+    const activeColumnIndex = columns.findIndex(
+      (col) => activeColumnId === col.id
+    );
+    const overColumnIndex = columns.findIndex((col) => overColumnId === col.id);
 
-      return arrayMove(columns, activeColumnIndex, overColumnIndex);
-    });
+    sortColumns(arrayMove(columns, activeColumnIndex, overColumnIndex));
   };
 
   const onDragOver = (event: DragOverEvent) => {
@@ -120,27 +94,23 @@ export default function Board() {
 
     // DROPING TASK OVER ANOTHER TASK
     if (isActiveTask && isOverTask) {
-      setTasks((tasks) => {
-        const overTaskIndex = tasks.findIndex((task) => overId === task.id);
-        const activeTaskIndex = tasks.findIndex((task) => activeId === task.id);
+      const overTaskIndex = tasks.findIndex((task) => overId === task.id);
+      const activeTaskIndex = tasks.findIndex((task) => activeId === task.id);
 
-        tasks[activeTaskIndex].columnId = tasks[overTaskIndex].columnId;
+      tasks[activeTaskIndex].columnId = tasks[overTaskIndex].columnId;
 
-        return arrayMove(tasks, activeTaskIndex, overTaskIndex);
-      });
+      sortTasks(arrayMove(tasks, activeTaskIndex, overTaskIndex));
     }
 
     const isOverColumn = over.data.current?.type === "COLUMN";
 
     // DROPING TASK OVER ANOTHER COLUMN
     if (isActiveTask && isOverColumn) {
-      setTasks((tasks) => {
-        const activeTaskIndex = tasks.findIndex((task) => activeId === task.id);
+      const activeTaskIndex = tasks.findIndex((task) => activeId === task.id);
 
-        tasks[activeTaskIndex].columnId = overId as string;
+      tasks[activeTaskIndex].columnId = overId as string;
 
-        return arrayMove(tasks, activeTaskIndex, activeTaskIndex);
-      });
+      sortTasks(arrayMove(tasks, activeTaskIndex, activeTaskIndex));
     }
   };
 
@@ -155,16 +125,7 @@ export default function Board() {
         <div className="w-full h-full flex gap-4">
           <SortableContext items={columnIds}>
             {columns.map(({ id, title }) => (
-              <Column
-                id={id}
-                key={id}
-                title={title}
-                className="shrink-0"
-                createTask={handleCreateTask}
-                deleteTask={handleDeleteTask}
-                deleteColumn={handleDeleteColumn}
-                tasks={tasks.filter((task) => task.columnId === id)}
-              />
+              <Column id={id} key={id} title={title} className="shrink-0" />
             ))}
           </SortableContext>
 
@@ -172,7 +133,7 @@ export default function Board() {
             size="large"
             type="dashed"
             icon={<PlusOutlined />}
-            onClick={createNewColumn}
+            onClick={() => createColumn(projectId)}
           >
             Add New Column
           </Button>
@@ -180,25 +141,8 @@ export default function Board() {
 
         {createPortal(
           <DragOverlay>
-            {activeColumn && (
-              <Column
-                {...activeColumn}
-                createTask={handleCreateTask}
-                deleteTask={handleDeleteTask}
-                deleteColumn={handleDeleteColumn}
-                tasks={tasks.filter(
-                  (task) => task.columnId === activeColumn.id
-                )}
-              />
-            )}
-
-            {activeTask && (
-              <Task
-                {...activeTask}
-                key={activeTask.id}
-                deleteTask={handleDeleteTask}
-              />
-            )}
+            {activeColumn && <Column {...activeColumn} />}
+            {activeTask && <Task {...activeTask} key={activeTask.id} />}
           </DragOverlay>,
           document.body
         )}

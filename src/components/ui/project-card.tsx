@@ -2,7 +2,7 @@
 import { ProjectFormValues } from "@/types/project";
 import { UserType } from "@/types/user";
 import { cn } from "@/utils/cn";
-import useProjectStore from "@/utils/store";
+import useProjectStore from "@/context/project-store";
 import {
   DeleteOutlined,
   EditOutlined,

@@ -1,26 +1,20 @@
+import useBoardStore from "@/context/board-store";
 import { cn } from "@/utils/cn";
 import { DeleteOutlined } from "@ant-design/icons";
 import { useSortable } from "@dnd-kit/sortable";
-import { Button, Typography } from "antd";
 import { CSS } from "@dnd-kit/utilities";
-import { useState } from "react";
+import { Button, Typography } from "antd";
 
 interface TaskProps {
   id: string;
   content: string;
   columnId: string;
   className?: string;
-  deleteTask: (id: string) => void;
 }
 
-export default function Task({
-  id,
-  content,
-  columnId,
-  className,
-  deleteTask,
-}: TaskProps) {
-  const [contentString, setContentString] = useState(content);
+export default function Task({ id, content, columnId, className }: TaskProps) {
+  const deleteTask = useBoardStore((state) => state.deleteTask);
+  const updateTask = useBoardStore((state) => state.updateTask);
 
   const {
     setNodeRef,
@@ -46,8 +40,10 @@ export default function Task({
         className
       )}
     >
-      <Typography.Text editable={{ onChange: setContentString }}>
-        {contentString}
+      <Typography.Text
+        editable={{ onChange: (value) => updateTask(id, { content: value }) }}
+      >
+        {content}
       </Typography.Text>
 
       <Button
